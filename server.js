@@ -40,8 +40,6 @@ async function run() {
 
 run().catch(console.dir());
 
-
-
 app.post("/createPost", async (req, res) => {
     console.log("--- Create Post --- ");
     try {
@@ -75,19 +73,19 @@ app.put("/editPost", async (req, res) => {
 
         const filter = {
             id: req.body.id,
-        }
+        };
 
         const updateDoc = {
-            $set:{
+            $set: {
                 nombre: req.body.nombre,
                 apellido: req.body.apellido,
                 correo: req.body.correo,
                 password: req.body.password,
-            }
-        }
+            },
+        };
 
         const result = await post.updateOne(filter, updateDoc);
-        
+
         res.status(200).send(
             `se actualizo exitosamente el usuario con edit post ${result}`
         );
@@ -99,9 +97,42 @@ app.put("/editPost", async (req, res) => {
     }
 });
 
+app.get("/listPost", async (req, res) => {
+    try {
+        const client = new MongoClient(uri);
+        const database = client.db("insertDB");
+        const post = database.collection("Post");
 
+        const query = {};
+        const options = {
+            // sort: {nombre: 1},
+            projection: {id: 0, nombre: 1, apellido: 1},
+        };
+        const cursor = post.find();
 
+        if ((await post.countDocuments()) === 0) {
+            console.log("No documents found!");
+            res.status(200).send(`no se encontraron docuemntos`);
+        } 
 
+        let arr = [];
+        // Print returned documents
+        for await (const doc of cursor) {
+            // console.dir(doc);
+            arr.push(doc);
+        }
+        res.status(200).send({
+            documentos: arr,
+        });
+        // console.log(`hay ${await post.countDocuments()} documentos`);
+    } catch (error) {
+        res.status(500).send("no se pudo leer");
+        console.error(error);
+    } finally {
+        await client.close();
+    }
+    // run().catch(console.dir);
+});
 
 app.post("/createUser", (req, res) => {
     console.log("recibi una peticion PUT");
