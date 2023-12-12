@@ -97,6 +97,32 @@ app.put("/editPost", async (req, res) => {
     }
 });
 
+app.delete("/deletePost", async (req, res) => {
+    try {
+        const client = new MongoClient(uri);
+        const database = client.db("insertDB");
+        const post = database.collection("Post");
+
+        const query = {id: req.body.id};
+        const result = await post.deleteOne(query);
+
+        if (result.deletedCount === 1) {
+            console.log("Successfully deleted one document.");
+        } else {
+            console.log("No documents matched the query. Deleted 0 documents.");
+        }
+
+        res.status(200).send(
+            `se elimino el usuario con delete post ${result}`
+        );
+    } catch (error) {
+        res.status(500).send("no se elimino el usuario");
+        console.log(error);
+    } finally {
+        await client.close();
+    }
+});
+
 app.get("/listPost", async (req, res) => {
     try {
         const client = new MongoClient(uri);
@@ -113,7 +139,7 @@ app.get("/listPost", async (req, res) => {
         if ((await post.countDocuments()) === 0) {
             console.log("No documents found!");
             res.status(200).send(`no se encontraron docuemntos`);
-        } 
+        }
 
         let arr = [];
         // Print returned documents
