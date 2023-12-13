@@ -1,11 +1,11 @@
 const express = require("express");
-const { initializeApp } =require("firebase/app");
-const { getAuth } =require( "firebase/auth");
+const { initializeApp, FirebaseError } = require("firebase/app");
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
 const path = require("path");
 const app = express();
 const bodyParser = require("body-parser");
-var urlEncodeParser = bodyParser.urlencoded({extended: true});
-const {MongoClient, ServerApiVersion} = require("mongodb");
+var urlEncodeParser = bodyParser.urlencoded({ extended: true });
+const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const firebaseConfig = {
     apiKey: "AIzaSyAcDRLbY5AdFIj1o432S1oj5JE6PHB2dN4",
@@ -20,7 +20,7 @@ const firebaseConfig = {
 const uri =
     "mongodb+srv://gironserlio:SerlioUX@clusterserlio.imnmxjz.mongodb.net/?retryWrites=true&w=majority";
 
-const fireapp = initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 app.use(urlEncodeParser);
 
 let port = 3000;
@@ -41,7 +41,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         await client.connect();
-        await client.db("admin").command({ping: 1});
+        await client.db("admin").command({ ping: 1 });
         console.log(
             "Pinged your deploymen. You successfully connected to MongoDB!"
         );
@@ -53,6 +53,74 @@ async function run() {
 }
 
 run().catch(console.dir());
+
+
+//---------------------------------------------------------------------------------------------------------
+app.post("/createUserWithEmailAndPassword", async (req, res) => {
+    const auth = getAuth(firebaseApp);
+    const email = req.body.email;
+    const password = req.body.password;
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            // Signed in 
+            res.status(200).send({
+                msg: "Esta es la respuesta de firebase",
+                data: userCredential
+            })
+            const user = userCredential.user;
+            // ...
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            res.status(500).send({
+                msg: "Error al crear el usuario",
+                errorCode: errorCode,
+                errorMsg: errorMessage
+            })
+            // ..
+        });
+});
+
+//---------------------------------------------------------------------------------------------------------
+app.post("/logIn", async (req, res) => {
+    try {
+        const auth = getAuth(firebaseApp);
+        const email = req.body.email;
+        const password = req.body.password;
+        signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            res.status(200).send({
+                msg: "Log in exitoso!",
+                data: userCredential
+            })
+
+        });
+        }catch(error){
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            res.status(500).send({
+                msg: "Error al hacer log in",
+                errorCode: errorCode,
+                errorMsg: errorMessage
+        })
+    }
+})
+
+//---------------------------------------------------------------------------------------------------------
+app.post("/logIn", (req, res) => {
+    try {
+        const auth = getAuth();
+        signOut(auth).then(() => {
+
+        }).catch((error) => {
+
+        });
+    } catch (error) {
+        
+    }
+})
+
 
 app.post("/createPost", async (req, res) => {
     console.log("--- Create Post --- ");
@@ -117,7 +185,7 @@ app.delete("/deletePost", async (req, res) => {
         const database = client.db("insertDB");
         const post = database.collection("Post");
 
-        const query = {id: req.body.id};
+        const query = { id: req.body.id };
         const result = await post.deleteOne(query);
 
         if (result.deletedCount === 1) {
@@ -146,7 +214,7 @@ app.get("/listPost", async (req, res) => {
         const query = {};
         const options = {
             // sort: {nombre: 1},
-            projection: {id: 0, nombre: 1, apellido: 1},
+            projection: { id: 0, nombre: 1, apellido: 1 },
         };
         const cursor = post.find();
 
