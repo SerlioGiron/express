@@ -1,12 +1,26 @@
 const express = require("express");
+const { initializeApp } =require("firebase/app");
+const { getAuth } =require( "firebase/auth");
 const path = require("path");
 const app = express();
 const bodyParser = require("body-parser");
 var urlEncodeParser = bodyParser.urlencoded({extended: true});
 const {MongoClient, ServerApiVersion} = require("mongodb");
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAcDRLbY5AdFIj1o432S1oj5JE6PHB2dN4",
+    authDomain: "examen2ux-6152b.firebaseapp.com",
+    projectId: "examen2ux-6152b",
+    storageBucket: "examen2ux-6152b.appspot.com",
+    messagingSenderId: "985837060880",
+    appId: "1:985837060880:web:16092f1a00a76e9f445b95",
+    measurementId: "G-SFQWQZSFB2"
+};
+
 const uri =
     "mongodb+srv://gironserlio:SerlioUX@clusterserlio.imnmxjz.mongodb.net/?retryWrites=true&w=majority";
 
+const fireapp = initializeApp(firebaseConfig);
 app.use(urlEncodeParser);
 
 let port = 3000;
