@@ -5,7 +5,7 @@ const path = require("path");
 const app = express();
 const bodyParser = require("body-parser");
 var urlEncodeParser = bodyParser.urlencoded({ extended: true });
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const firebaseConfig = {
     apiKey: "AIzaSyAcDRLbY5AdFIj1o432S1oj5JE6PHB2dN4",
@@ -153,9 +153,7 @@ app.put("/editPost", async (req, res) => {
         const database = client.db("insertDB");
         const post = database.collection("Post");
 
-        const filter = {
-            id: req.body.id,
-        };
+        const filter = { _id: new ObjectId(req.body._id) };
 
         const updateDoc = {
             $set: {
@@ -185,7 +183,7 @@ app.delete("/deletePost", async (req, res) => {
         const database = client.db("insertDB");
         const post = database.collection("Post");
 
-        const query = { id: req.body.id };
+        const query = { _id: new ObjectId(req.body._id) };
         const result = await post.deleteOne(query);
 
         if (result.deletedCount === 1) {
