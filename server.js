@@ -1,6 +1,6 @@
 const express = require("express");
 const { initializeApp, FirebaseError } = require("firebase/app");
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require("firebase/auth");
 const path = require("path");
 const app = express();
 const bodyParser = require("body-parser");
@@ -83,7 +83,7 @@ app.post("/createUserWithEmailAndPassword", async (req, res) => {
 });
 
 //---------------------------------------------------------------------------------------------------------
-app.post("/logIn", async (req, res) => {
+app.post("/signInWithEmailAndPassword", async (req, res) => {
     try {
         const auth = getAuth(firebaseApp);
         const email = req.body.email;
@@ -108,7 +108,7 @@ app.post("/logIn", async (req, res) => {
 })
 
 //---------------------------------------------------------------------------------------------------------
-app.post("/logIn", (req, res) => {
+app.post("/signOut", (req, res) => {
     try {
         const auth = getAuth();
         signOut(auth).then(() => {
