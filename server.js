@@ -132,7 +132,7 @@ app.post("/createPost", async (req, res) => {
         const doc = {
             nombre: req.body.nombre,
             apellido: req.body.apellido,
-            correo: req.body.email,
+            email: req.body.email,
             password: req.body.password,
         };
         const result = await post.insertOne(docbody);
