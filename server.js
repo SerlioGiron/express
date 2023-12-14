@@ -159,7 +159,7 @@ app.put("/editPost", async (req, res) => {
             $set: {
                 nombre: req.body.nombre,
                 apellido: req.body.apellido,
-                correo: req.body.email,
+                email: req.body.email,
                 password: req.body.password,
             },
         };
