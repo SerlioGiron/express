@@ -132,7 +132,7 @@ app.post("/createPost", async (req, res) => {
         const doc = {
             nombre: req.body.nombre,
             apellido: req.body.apellido,
-            correo: req.body.correo,
+            correo: req.body.email,
             password: req.body.password,
         };
         const result = await post.insertOne(docbody);
@@ -161,7 +161,7 @@ app.put("/editPost", async (req, res) => {
             $set: {
                 nombre: req.body.nombre,
                 apellido: req.body.apellido,
-                correo: req.body.correo,
+                correo: req.body.email,
                 password: req.body.password,
             },
         };
