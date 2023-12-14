@@ -108,7 +108,7 @@ app.post("/logIn", async (req, res) => {
 })
 
 //---------------------------------------------------------------------------------------------------------
-app.post("/logIn", (req, res) => {
+app.post("/logOut", (req, res) => {
     try {
         const auth = getAuth();
         signOut(auth).then(() => {
