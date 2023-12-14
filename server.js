@@ -226,7 +226,7 @@ app.get("/listPost", async (req, res) => {
         let arr = [];
         // Print returned documents
         for await (const doc of cursor) {
-            // console.dir(doc);
+            console.dir(doc);
             arr.push(doc);
         }
         res.status(200).send({
