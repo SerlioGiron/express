@@ -154,7 +154,7 @@ app.put("/editPost", async (req, res) => {
         const post = database.collection("Post");
 
         const filter = {
-            _id: req.body._id,
+            id: req.body.id,
         };
 
         const updateDoc = {
@@ -185,7 +185,7 @@ app.delete("/deletePost", async (req, res) => {
         const database = client.db("insertDB");
         const post = database.collection("Post");
 
-        const query = { _id: req.body._id };
+        const query = { id: req.body.id };
         const result = await post.deleteOne(query);
 
         if (result.deletedCount === 1) {
