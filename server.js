@@ -114,20 +114,15 @@ app.post("/logIn", (req, res) => {
 })
 
 //---------------------------------------------------------------------------------------------------------
-app.post("/logOut", (req, res) => {
-    try {
-        const auth = getAuth();
-        signOut(auth).then(() => {
-            console.log('log out exitoso');
-            res.status(200).send('log out exitoso')
-        }).catch((error) => {
-            res.status(500).send('fallo el log out')
-            console.log('fallo el log out');
-        });
-    } catch (error) {
+app.post("/logOut",  (res) => {
+    const auth = getAuth(app);
+    signOut(auth).then(() => {
+      console.log('log out exitoso');
+    }).catch((error) => {
+      console.log('error en log out');
+    });
+});
 
-    }
-})
 
 
 app.post("/createPost", async (req, res) => {
