@@ -185,13 +185,13 @@ app.post("/createPost", async (req, res) => {
     }
 });
 
-app.put("/editPost", async (req, res) => {
+app.put("/editPost/:_id", async (req, res) => {
     try {
         const client = new MongoClient(uri);
         const database = client.db("insertDB");
         const post = database.collection("Post");
 
-        const filter = {_id: new ObjectId(req.body._id)};
+        const filter = {_id: new ObjectId(req.params._id)};
 
         const updateDoc = {
             $set: {
@@ -215,13 +215,13 @@ app.put("/editPost", async (req, res) => {
     }
 });
 
-app.delete("/deletePost", async (req, res) => {
+app.delete("/deletePost/:_id", async (req, res) => {
     try {
         const client = new MongoClient(uri);
         const database = client.db("insertDB");
         const post = database.collection("Post");
 
-        const query = {_id: new ObjectId(req.body._id)};
+        const query = {_id: new ObjectId(req.params._id)};
         const result = await post.deleteOne(query);
 
         if (result.deletedCount === 1) {
