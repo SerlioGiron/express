@@ -56,7 +56,7 @@ run().catch(console.dir());
 
 
 //---------------------------------------------------------------------------------------------------------
-app.post("/signUp", (req, res) => {
+app.post("/createUser", (req, res) => {
     const auth = getAuth(firebaseApp);
     const email = req.body.email;
     const password = req.body.password;
@@ -114,7 +114,7 @@ app.post("/logIn", (req, res) => {
 })
 
 //---------------------------------------------------------------------------------------------------------
-app.post("/signOut", (req, res) => {
+app.post("/logOut", (req, res) => {
     try {
         const auth = getAuth();
         signOut(auth).then(() => {
