@@ -56,19 +56,16 @@ run().catch(console.dir());
 
 
 //---------------------------------------------------------------------------------------------------------
-app.post("/createUserWithEmailAndPassword", async (req, res) => {
+app.post("/signUp", (req, res) => {
     const auth = getAuth(firebaseApp);
     const email = req.body.email;
     const password = req.body.password;
     createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            // Signed in 
+        .then((resp) => {
             res.status(200).send({
                 msg: "Esta es la respuesta de firebase",
-                data: userCredential
+                data: resp,
             })
-            const user = userCredential.user;
-            // ...
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -78,31 +75,40 @@ app.post("/createUserWithEmailAndPassword", async (req, res) => {
                 errorCode: errorCode,
                 errorMsg: errorMessage
             })
-            // ..
         });
 });
 
 //---------------------------------------------------------------------------------------------------------
-app.post("/signInWithEmailAndPassword", async (req, res) => {
+app.post("/logIn", (req, res) => {
     try {
         const auth = getAuth(firebaseApp);
         const email = req.body.email;
         const password = req.body.password;
         signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            res.status(200).send({
-                msg: "Log in exitoso!",
-                data: userCredential
-            })
+            .then((resp) => {
+                res.status(200).send({
+                    msg: "Log in exitoso!",
+                    data: resp,
+                })
+                    .catch((error) => {
 
-        });
-        }catch(error){
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            res.status(500).send({
-                msg: "Error al hacer log in",
-                errorCode: errorCode,
-                errorMsg: errorMessage
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        res.status(500).send({
+                            msg: "Error al hacer log in",
+                            errorCode: errorCode,
+                            errorMsg: errorMessage
+                        })
+
+                    })
+            });
+    } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        res.status(500).send({
+            msg: "Error al hacer log in",
+            errorCode: errorCode,
+            errorMsg: errorMessage
         })
     }
 })
@@ -117,7 +123,7 @@ app.post("/signOut", (req, res) => {
 
         });
     } catch (error) {
-        
+
     }
 })
 
