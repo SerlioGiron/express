@@ -118,9 +118,11 @@ app.post("/logOut", (req, res) => {
     try {
         const auth = getAuth();
         signOut(auth).then(() => {
-
+            console.log('log out exitoso');
+            res.status(200).send('log out exitoso')
         }).catch((error) => {
-
+            res.status(500).send('fallo el log out')
+            console.log('fallo el log out');
         });
     } catch (error) {
 
