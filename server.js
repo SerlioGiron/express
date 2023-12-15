@@ -118,8 +118,11 @@ app.post("/logOut",  (res) => {
     const auth = getAuth(app);
     signOut(auth).then(() => {
       console.log('log out exitoso');
+      res.status(200).send('log out exitoso')
     }).catch((error) => {
       console.log('error en log out');
+      res.status(500).send('log out fallido')
+
     });
 });
 
