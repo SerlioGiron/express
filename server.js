@@ -1,11 +1,16 @@
 const express = require("express");
-const { initializeApp, FirebaseError } = require("firebase/app");
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require("firebase/auth");
+const {initializeApp, FirebaseError} = require("firebase/app");
+const {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+} = require("firebase/auth");
 const path = require("path");
 const app = express();
 const bodyParser = require("body-parser");
-var urlEncodeParser = bodyParser.urlencoded({ extended: true });
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+var urlEncodeParser = bodyParser.urlencoded({extended: true});
+const {MongoClient, ServerApiVersion, ObjectId} = require("mongodb");
 
 const firebaseConfig = {
     apiKey: "AIzaSyAcDRLbY5AdFIj1o432S1oj5JE6PHB2dN4",
@@ -14,7 +19,7 @@ const firebaseConfig = {
     storageBucket: "examen2ux-6152b.appspot.com",
     messagingSenderId: "985837060880",
     appId: "1:985837060880:web:16092f1a00a76e9f445b95",
-    measurementId: "G-SFQWQZSFB2"
+    measurementId: "G-SFQWQZSFB2",
 };
 
 const uri =
@@ -41,7 +46,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         await client.connect();
-        await client.db("admin").command({ ping: 1 });
+        await client.db("admin").command({ping: 1});
         console.log(
             "Pinged your deploymen. You successfully connected to MongoDB!"
         );
@@ -54,7 +59,6 @@ async function run() {
 
 run().catch(console.dir());
 
-
 //---------------------------------------------------------------------------------------------------------
 app.post("/createUser", (req, res) => {
     const auth = getAuth(firebaseApp);
@@ -65,7 +69,7 @@ app.post("/createUser", (req, res) => {
             res.status(200).send({
                 msg: "Esta es la respuesta de firebase",
                 data: resp,
-            })
+            });
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -73,34 +77,32 @@ app.post("/createUser", (req, res) => {
             res.status(500).send({
                 msg: "Error al crear el usuario",
                 errorCode: errorCode,
-                errorMsg: errorMessage
-            })
+                errorMsg: errorMessage,
+            });
         });
 });
 
 //---------------------------------------------------------------------------------------------------------
-app.post("/logIn", (req, res) => {
+app.post("/logIn", (_req, res) => {
     try {
         const auth = getAuth(firebaseApp);
-        const email = req.body.email;
-        const password = req.body.password;
+        const email = _req.body.email;
+        const password = _req.body.password;
         signInWithEmailAndPassword(auth, email, password)
             .then((resp) => {
                 res.status(200).send({
-                    msg: "Log in exitoso!",
+                    msg: "Log In exitoso :)",
                     data: resp,
-                })
-                    .catch((error) => {
-
-                        const errorCode = error.code;
-                        const errorMessage = error.message;
-                        res.status(500).send({
-                            msg: "Error al hacer log in",
-                            errorCode: errorCode,
-                            errorMsg: errorMessage
-                        })
-
-                    })
+                });
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                res.status(500).send({
+                    msg: "Error al hacer log in",
+                    errorCode: errorCode,
+                    errorMessage: errorMessage,
+                });
             });
     } catch (error) {
         const errorCode = error.code;
@@ -108,25 +110,55 @@ app.post("/logIn", (req, res) => {
         res.status(500).send({
             msg: "Error al hacer log in",
             errorCode: errorCode,
-            errorMsg: errorMessage
-        })
+            errorMessage: errorMessage,
+        });
     }
-})
-
-//---------------------------------------------------------------------------------------------------------
-app.post("/logOut",  (res) => {
-    const auth = getAuth(app);
-    signOut(auth).then(() => {
-        res.status(200).send('log out exitoso')
-        console.log('log out exitoso');
-    }).catch((error) => {
-      console.log('error en log out');
-      res.status(500).send('log out fallido')
-
-    });
 });
 
+//---------------------------------------------------------------------------------------------------------
+// app.post("/logOut", (req, res) => {
+//     const email = req.body.email;
+//     const password = req.body.password;
+//     const auth = getAuth(app);
+//     signOut(auth, email, password)
+//         .then(() => {
+//             res.status(200).send("log out exitoso");
+//             console.log("log out exitoso");
+//         })
+//         .catch((error) => {
+//             console.log("error en log out");
+//             res.status(500).send("log out fallido");
+//         });
+// });
 
+// log out del usuario actual
+app.post('/logOut', async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    const auth = getAuth();
+    signOut(auth)
+        .then(() => { // response de firebase
+            res.status(200).send({
+                "msg": "Log out",
+            });
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            res.status(500).send({
+                "msg": "Error Log out",
+                "data": error.code,
+            });
+        });
+});
+
+const auth = getAuth();
+signOut(auth).then(() => {
+    // Sign-out successful.
+}).catch((error) => {
+    // An error happened.
+});
 
 app.post("/createPost", async (req, res) => {
     console.log("--- Create Post --- ");
@@ -159,7 +191,7 @@ app.put("/editPost", async (req, res) => {
         const database = client.db("insertDB");
         const post = database.collection("Post");
 
-        const filter = { _id: new ObjectId(req.body._id) };
+        const filter = {_id: new ObjectId(req.body._id)};
 
         const updateDoc = {
             $set: {
@@ -189,7 +221,7 @@ app.delete("/deletePost", async (req, res) => {
         const database = client.db("insertDB");
         const post = database.collection("Post");
 
-        const query = { _id: new ObjectId(req.body._id) };
+        const query = {_id: new ObjectId(req.body._id)};
         const result = await post.deleteOne(query);
 
         if (result.deletedCount === 1) {
@@ -198,9 +230,7 @@ app.delete("/deletePost", async (req, res) => {
             console.log("No documents matched the query. Deleted 0 documents.");
         }
 
-        res.status(200).send(
-            `se elimino el usuario con delete post ${result}`
-        );
+        res.status(200).send(`se elimino el usuario con delete post ${result}`);
     } catch (error) {
         res.status(500).send("no se elimino el usuario");
         console.log(error);
@@ -218,7 +248,7 @@ app.get("/listPost", async (req, res) => {
         const query = {};
         const options = {
             // sort: {nombre: 1},
-            projection: { id: 0, nombre: 1, apellido: 1 },
+            projection: {id: 0, nombre: 1, apellido: 1},
         };
         const cursor = post.find();
 
